@@ -35,7 +35,7 @@ I used **Docker** to run the media server inside an isolated box. This prevents 
    ```bash
    nano .env
    ```
-Start the application stack in the background:
+4. Start the application stack in the background:
    ```bash
    docker compose up -d
    ```
@@ -65,7 +65,7 @@ Borg uses block-level deduplication. If you have a 5 GB video file, Borg saves i
 3. Go to the Sources tab and select your raw immich data directory.
 4. Set a rolling automation schedule under the Schedule tab to trigger a snapshot every night at 2:00 AM using a Grandfather-Father-Son (GFS) retention schedule.
 
-## ☁️ Step 4: Automate a Fast Cloud Fallback Copy
+### ☁️ Step 4: Automate a Fast Cloud Fallback Copy
 If your server's local drives fail physically or your house loses power, local backups won't save your data. You need a secondary fallback copy in the cloud.
 
 To fix this, I combined two tools to create an efficient pipeline:

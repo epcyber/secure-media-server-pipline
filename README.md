@@ -89,3 +89,29 @@ __3. Keep Storage Clean on Autopilot__: I added a cleanup rule at the absolute e
    ```bash
    nano ~/backup.sh
    ```
+#### Baseline Script Example (Proof-of-Concept)
+
+> **Quick heads up:** This is a basic reference script to show how the pipeline works. You will definitely want to tweak the paths, remotes, and error handling to match your own Linux setup and drive mounts before hooking it up to a cron job or post-backup hook.
+
+```bash
+#!/usr/bin/env bash
+
+# Directories and remote paths to customize for your setup
+DATA_DIR="/path/to/immich/data"
+TEMP_ARCHIVE="/tmp/immich_backup.tar.gz"
+CLOUD_REMOTE="my_gdrive:immich-backups"
+
+# Pack and compress using all available CPU cores via pigz
+tar -I pigz -cf "$TEMP_ARCHIVE" "$DATA_DIR"
+
+# Push to Google Drive using 128M chunks for better upload throughput
+rclone copy "$TEMP_ARCHIVE" "$CLOUD_REMOTE" --drive-chunk-size 128M
+
+# Wipe the local staging file so it doesn't consume local drive space
+rm -f "$TEMP_ARCHIVE"
+
+# Purge archives older than 48 hours to prevent storage bloat.
+# Note: --drive-use-trash=false permanently removes files immediately,
+# preventing deleted archives from filling up your Google Drive Bin quota.
+rclone delete "$CLOUD_REMOTE" --min-age 2d --drive-use-trash=false
+
